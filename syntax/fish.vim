@@ -15,7 +15,7 @@ syntax keyword fishKeyword alias begin bg bind block break breakpoint builtin
          \ nextd not open popd prevd psub pushd pwd random read return set
          \ set_color status trap type ulimit umask vared
 syntax match fishKeyword "\<contains\>"
-syntax match fishKeyword "command\ze\s\(tes[^t]\|te[^s]\|t[^e]\|[^t]\)"
+syntax match fishKeyword "command\( test\)\@!"
 syntax keyword fishKeywordError do done then fi export local
 
 syntax keyword fishConditional if else switch or and
@@ -54,13 +54,16 @@ syntax region fishString matchgroup=fishOperator start=/"/ skip=/\\"/ end=/"/ co
 syntax match fishNumber "\<[-+]\=\d\+\>"
 syntax cluster fishValues contains=fishVarDeref,fishString,fishNumber
 
-syntax region fishTest matchgroup=fishOperator start="\[" skip="\\$" end="\]" contains=@fishTestContents
-syntax region fishTest matchgroup=fishKeyword start="test" end="\([^\\]\zs$\|\ze\s*#\)" contains=@fishTestContents
+syntax region fishTest matchgroup=fishOperator start="\[\ze[^\[]" skip="\\$" end="\]" contains=@fishTestContents
+syntax region fishTest matchgroup=fishKeyword start="test\>" skip="\\$" end="$" end="#" contains=@fishTestContents
 syntax match fishTestOp contained "\<-[a-hnoprstuwxzLS]\>"
 syntax match fishTestOp contained "\<-\(eq\|ne\|ge\|gt\|le\|lt\)\>"
-syntax match fishTestOp contained "\<\(!=\|!\|=\)\>"
-syntax cluster fishTestContents contains=fishTestOp,fishSubst,@fishError,@fishEscapeSeqs,@fishValues,fishEOLEscape
-syntax match fishOpError "\<\(-ef\|-ot\|-nt\|==\|&&\|||\|!!\|=\|\[\[\|]]\)\>" "syntax
+syntax match fishTestOp contained "\(!=\|!\|=\)"
+syntax cluster fishTestContents contains=fishTestOp,fishSubst,@fishError,fishTestOpError,@fishEscapeSeqs,@fishValues,fishEOLEscape
+syntax match fishTestOpError contained "\<\(-ef\|-ot\|-nt\)\>"
+syntax match fishTestOpError contained "\(==\|<\|>\)"
+
+syntax match fishOpError "\(&&\|||\|!!\|\[\[\|]]\)"
 
 " Some sequences used in Bourne-like shells, but not fish
 syntax cluster fishError contains=fishKeywordError,fishOpError,fishVarDerefError,fishStringError
@@ -94,6 +97,7 @@ highlight default link fishTestOp Operator
 highlight default link fishError Error
 highlight default link fishKeywordError fishError
 highlight default link fishOpError fishError
+highlight default link fishTestOpError fishOpError
 highlight default link fishVarDerefError fishError
 highlight default link fishStringError fishError
 
