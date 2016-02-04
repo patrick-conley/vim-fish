@@ -55,7 +55,7 @@ syntax match fishNumber "\<[-+]\=\d\+\>"
 syntax cluster fishValues contains=fishVarDeref,fishString,fishNumber
 
 syntax region fishTest matchgroup=fishOperator start="\[\ze[^\[]" skip="\\$" end="\]" contains=@fishTestContents
-syntax region fishTest matchgroup=fishKeyword start="\<test\>" skip="\\$" end="$" end="#" contains=@fishTestContents
+syntax region fishTest matchgroup=fishKeyword start="\<test\>" skip="\\$" end=";" end="$" end="#" contains=@fishTestContents
 syntax match fishTestOp contained "\<-[a-hnoprstuwxzLS]\>"
 syntax match fishTestOp contained "\<-\(eq\|ne\|ge\|gt\|le\|lt\)\>"
 syntax match fishTestOp contained "\(!=\|!\|=\)"
